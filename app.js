@@ -36,6 +36,12 @@ app.use((req, res) => {
   res.send({ message: 'Страница не найдена' });
 });
 
+app.use(function(err, req, res, next) {
+  if (err instanceof mongoose.Error.CastError) {
+    res.status(400).send({ message: ' Не валидные данные' })
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Сервер запущен, порт: ${PORT}.`);
 });

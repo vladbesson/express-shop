@@ -36,8 +36,14 @@ module.exports.updateProduct = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-module.exports.deleteProduct = (req, res) => {
-  Product.findByIdAndRemove(req.params.id)
-    .then((product) => res.send({ data: product }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+module.exports.deleteProduct = (req, res, next) => {
+  Product.findById(req.params.id)
+    .orFail(() => {
+      res.status(404).send({ message: 'Нет такого продукта' });
+    })
+    .then((product) => {
+      product.remove();
+      return res.send({ data: product });
+    })
+    .catch(next);
 };
